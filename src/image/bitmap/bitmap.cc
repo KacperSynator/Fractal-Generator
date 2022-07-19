@@ -1,4 +1,4 @@
-#include "inc/bitmap.h"
+#include "bitmap/bitmap.h"
 
 Bitmap::Bitmap(const int& width, const int& height) : width_(width), height_(height) {
     pixels_.resize(height);

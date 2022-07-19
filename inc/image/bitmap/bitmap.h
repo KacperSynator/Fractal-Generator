@@ -5,17 +5,17 @@
 #include<iostream>
 #include<fstream>
 
-#include "inc/image.h"
-#include "inc/bitmap_header.h"
-#include "inc/bitmap_info_header.h"
+#include "image/image.h"
+#include "bitmap/bitmap_header.h"
+#include "bitmap/bitmap_info_header.h"
 
-class Bitmap : Image {
+class Bitmap : public Image {
   public:
     Bitmap(const int& width, const int& height);
     bool Write(const std::string& filename) const override;
     bool SetPixel(const int& x, const int& y, const uint8_t& red,
                   const uint8_t& green, const uint8_t& blue) override;
-    virtual ~Bitmap() {}
+    virtual ~Bitmap() = default;
 
     struct Pixel { uint8_t blue{0}, green{0}, red{0}; };
 
