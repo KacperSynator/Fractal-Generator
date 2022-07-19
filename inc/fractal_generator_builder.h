@@ -2,20 +2,21 @@
 
 #include<memory>
 
-#include "fractal_generator.h"
 #include "fractal/fractal.h"
 #include "image/image.h"
 #include "mandelbrot/mandelbrot.h"
 #include "bitmap/bitmap.h"
 
+class FractalGenerator;
 
 class FractalGeneratorBuilder {
   public:
-    FractalGeneratorBuilder(FractalGenerator& fg) : fg_(fg) {}
-    operator FractalGenerator&() const;
+    FractalGeneratorBuilder() {}
+    operator FractalGenerator();
     FractalGeneratorBuilder& MandelbrotFractal();
     FractalGeneratorBuilder& BitmapImage(const int& width, const int& height);
 
   private:
-    FractalGenerator& fg_;
+    std::unique_ptr<Fractal> fractal_{nullptr};
+    std::unique_ptr<Image> image_{nullptr};
 };
