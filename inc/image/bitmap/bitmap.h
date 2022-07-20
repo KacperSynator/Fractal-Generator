@@ -15,6 +15,9 @@ class Bitmap : public Image {
     bool Write(const std::string& filename) const override;
     bool SetPixel(const int& x, const int& y, const uint8_t& red,
                   const uint8_t& green, const uint8_t& blue) override;
+    int Width() const override { return width_; }
+    int Height() const override { return height_; }
+    
     virtual ~Bitmap() = default;
 
     struct Pixel { uint8_t blue{0}, green{0}, red{0}; };

@@ -2,5 +2,5 @@
 
 class Fractal {
   public:
-    virtual void foo() = 0;
+    virtual double Calculate(const double& x, const double& y) = 0;
 };

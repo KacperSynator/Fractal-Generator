@@ -1,13 +1,20 @@
 #pragma once
 
+#include <complex>
+#include <memory>
+
 #include "fractal/fractal.h"
+#include "coloring/coloring.h"
 
 class Mandelbrot : public Fractal {
   public:
     Mandelbrot() = default;
     virtual ~Mandelbrot() = default;
-    void foo() override {}
+    double Calculate(const double& x, const double& y) override;
 
   private:
-    const int kMaxIterations{1000};
+    int GetIterations(const double& x, const double& y);
+
+    static const int kMaxIterations{1000};
+    std::unique_ptr<Coloring> coloring_;
 };

@@ -12,11 +12,11 @@ class FractalGenerator {
   public:
     friend class FractalGeneratorBuilder;
 
-    FractalGenerator(const FractalGenerator& other) {};
     static FractalGeneratorBuilder Build() { return {}; }
+    void Generate(const std::string& filename);
 
   private:
-    FractalGenerator() {}
+    FractalGenerator() = default;
     FractalGenerator(std::unique_ptr<Fractal> fractal, std::unique_ptr<Image> image)
             : fractal_(std::move(fractal)), image_(std::move(image)) {}
     

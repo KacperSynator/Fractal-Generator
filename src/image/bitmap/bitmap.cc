@@ -13,7 +13,7 @@ bool Bitmap::Write(const std::string& filename) const {
     BitmapHeader bitmap_header(file_size, data_offset);
     BitmapInfoHeader bitmap_info_header(width_, -height_);
 
-    std::ofstream ofs(filename, std::ios::binary);
+    std::ofstream ofs(filename + ".bmp", std::ios::binary);
 
     if (!ofs.is_open()) return false;
 
