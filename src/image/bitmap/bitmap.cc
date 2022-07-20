@@ -2,8 +2,8 @@
 
 Bitmap::Bitmap(const int& width, const int& height) : width_(width), height_(height) {
     pixels_.resize(height);
-    for (auto& col : pixels_)
-        col.resize(width);
+    for (auto& row : pixels_)
+        row.resize(width);
 }
 
 bool Bitmap::Write(const std::string& filename) const {
