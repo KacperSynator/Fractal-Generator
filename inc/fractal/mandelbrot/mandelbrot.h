@@ -4,8 +4,6 @@
 #include <memory>
 
 #include "fractal/fractal.h"
-#include "coloring/coloring.h"
-#include "coloring/histogram_coloring.h"
 
 class Mandelbrot : public Fractal {
   public:

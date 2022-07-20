@@ -2,26 +2,27 @@
 
 
 void FractalGenerator::Generate(const std::string& filename) {
-    const int width = image_->Width();
-    const int height = image_->Height();
-    
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            double x_fractal = (x - width / 2) * 2.765 / width - 0.765;
-            double y_fractal = (y - height / 2) * 2.22 / height;
-            
-            int iteration = fractal_->Calculate(x_fractal, y_fractal);
+    CalculateFractal();
+    DrawFractal();
+    image_->Write(filename);
+}
+
+void FractalGenerator::CalculateFractal() {
+    for (int x = 0; x < image_->Width(); x++) {
+        for (int y = 0; y < image_->Height(); y++) {
+            auto coords = zooms_.DoZoom(x, y);
+            int iteration = fractal_->Calculate(coords.first, coords.second);
             coloring_->HandleIteration(iteration, x, y);
         }
     }
+}
 
-    const auto color_scales = coloring_->ResultArray();
-    for (int x = 0; x < width; x++) {
-        for (int y = 0; y < height; y++) {
-            u_int8_t color = color_scales[y][x] * 255;
-            image_->SetPixel(x, y, 0, 0, color);
+void FractalGenerator::DrawFractal() {
+      const auto color_scales = coloring_->ResultArray();
+    for (int x = 0; x < image_->Width(); x++) {
+        for (int y = 0; y < image_->Height(); y++) {
+            u_int8_t color = std::pow(255, color_scales[y][x]) ;
+            image_->SetPixel(x, y, 0, color, 0);
         }
     }
-    
-    image_->Write(filename);
 }
