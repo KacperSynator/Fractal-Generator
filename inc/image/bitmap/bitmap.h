@@ -8,6 +8,7 @@
 #include "image/image.h"
 #include "bitmap/bitmap_header.h"
 #include "bitmap/bitmap_info_header.h"
+#include "pixels/rgb_pixel.h"
 
 class Bitmap : public Image {
   public:
@@ -20,11 +21,9 @@ class Bitmap : public Image {
     
     virtual ~Bitmap() = default;
 
-    struct Pixel { uint8_t blue{0}, green{0}, red{0}; };
-
   private:
     const int kColorsPerPixel{3};
     int width_{0};
     int height_{0};
-    std::vector< std::vector<Pixel> > pixels_;
+    std::vector< std::vector< RGBPixel<uint8_t> > > pixels_;
 };
