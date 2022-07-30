@@ -12,14 +12,18 @@ class FractalGenerator;
 
 class FractalGeneratorBuilder {
    public:
-    FractalGeneratorBuilder() {}
+    FractalGeneratorBuilder() = delete;
+    FractalGeneratorBuilder(const int& width, const int& height, const int& max_iterations);
     operator FractalGenerator();
-    FractalGeneratorBuilder& MandelbrotFractal(const int& max_iterations);
-    FractalGeneratorBuilder& BitmapImage(const int& width, const int& height);
-    FractalGeneratorBuilder& HistColoring(const int& hist_size, const int& img_width, const int& img_height);
+    FractalGeneratorBuilder& MandelbrotFractal();
+    FractalGeneratorBuilder& BitmapImage();
+    FractalGeneratorBuilder& HistColoring();
 
    private:
     std::unique_ptr<Fractal> fractal_{nullptr};
     std::unique_ptr<Image> image_{nullptr};
     std::unique_ptr<Coloring> coloring_{nullptr};
+    int img_width_{0};
+    int img_height_{0};
+    int max_iterations_{0};
 };

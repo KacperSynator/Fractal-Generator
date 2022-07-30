@@ -25,7 +25,9 @@ class FractalGenerator {
 
     enum ColorScaleFunc { kPower, kMultiplication };
 
-    static FractalGeneratorBuilder Build() { return {}; }
+    static FractalGeneratorBuilder Build(const int& img_width, const int& img_height, const int& max_iterations) {
+        return {img_width, img_height, max_iterations};
+    }
     void Generate(const std::string& filename);
     void AddZoom(const Zoom& zoom) { zooms_.Add(zoom); }
     void AddZoom(const int& x, const int& y, const double& scale) { zooms_.Add(Zoom{x, y, scale}); }
@@ -35,9 +37,10 @@ class FractalGenerator {
     friend class FractalGeneratorBuilder;
 
    private:
-    using ColorRanges = std::vector< std::pair<double, RGBPixel<uint8_t> > >;
-    
-    FractalGenerator(std::unique_ptr<Fractal> fractal, std::unique_ptr<Image> image, std::unique_ptr<Coloring> coloring);
+    using ColorRanges = std::vector<std::pair<double, RGBPixel<uint8_t> > >;
+
+    FractalGenerator(std::unique_ptr<Fractal> fractal, std::unique_ptr<Image> image,
+                     std::unique_ptr<Coloring> coloring);
 
     bool ValidateColorRange(const double& range_end);
     bool ValidateLastColorRange();
