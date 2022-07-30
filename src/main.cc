@@ -26,7 +26,6 @@ int main(int argc, char* argv[]) {
     fg.AddColorRange(0.08, 255, 215, 0);
     fg.AddColorRange(1.0, 255, 255, 255);
 
-    // fg.ColorScaleFn(FractalGenerator::ColorScaleFunc::kMultiplication);
                         
     fg.AddZoom( Zoom{kImgWidth / 2, kImgHeight / 2, 4.0 / kImgWidth} );
     fg.AddZoom( Zoom{292, 196, 0.1} );

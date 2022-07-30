@@ -1,5 +1,12 @@
 #include "fractal_generator.h"
 
+FractalGenerator::FractalGenerator(std::unique_ptr<Fractal> fractal, std::unique_ptr<Image> image,
+                                   std::unique_ptr<Coloring> coloring)
+    : fractal_(std::move(fractal)),
+      image_(std::move(image)),
+      coloring_(std::move(coloring)),
+      zooms_(image->Width(), image->Height()) {}
+
 void FractalGenerator::Generate(const std::string& filename) {
     if (!ValidateLastColorRange()) return;
     PassRangesToColoringClass();
@@ -50,33 +57,6 @@ bool FractalGenerator::ValidateColorRange(const double& range_end) {
     return true;
 }
 
-void FractalGenerator::ColorScaleFn(const ColorScaleFunc& csf) {
-    switch (csf) {
-        case ColorScaleFunc::kMultiplication:
-            scale_func = [](RGBPixel<uint8_t> pixel, double scale) { return pixel * scale; };
-            break;
-
-        case ColorScaleFunc::kPower:
-            scale_func = [](RGBPixel<uint8_t> pixel, double scale) { 
-                return RGBPixel<uint8_t> {
-                    static_cast<uint8_t>(std::pow(pixel.red, scale)),
-                    static_cast<uint8_t>(std::pow(pixel.green, scale)),
-                    static_cast<uint8_t>(std::pow(pixel.blue, scale))
-                };
-            };
-            break;
-        
-        default:
-            break;
-    }
-}
-
-std::pair< RGBPixel<uint8_t>, RGBPixel<uint8_t> > FractalGenerator::GetColorRange(const double& scale) {
-    int idx = static_cast<int>(scale) / 10;
-
-    return std::make_pair(color_ranges_[idx].second, color_ranges_[idx + 1].second);
-}
-
 void FractalGenerator::CalculateFractal() {
     for (int x = 0; x < image_->Width(); x++) {
         for (int y = 0; y < image_->Height(); y++) {
@@ -88,19 +68,12 @@ void FractalGenerator::CalculateFractal() {
 }
 
 void FractalGenerator::DrawFractal() {
-    const auto color_scales = coloring_->ResultArray();
+    const auto pixels = coloring_->ResultArray();
     for (int x = 0; x < image_->Width(); x++) {
         for (int y = 0; y < image_->Height(); y++) {
-            auto color_range = GetColorRange(color_scales[y][x]);
-            RGBPixel<uint8_t> color_diff = color_range.second - color_range.first;
-            const RGBPixel<uint8_t> color = color_range.first + scale_func(color_diff, color_scales[y][x]);
-            image_->SetPixel(x, y, color.red, color.green, color.blue);
+            image_->SetPixel(x, y, pixels[y][x]);
         }
     }
 }
 
-void FractalGenerator::PassRangesToColoringClass() {
-    std::vector<double> ranges(color_ranges_.size());
-    std::transform(color_ranges_.begin(), color_ranges_.end(), ranges.begin(), [](auto range){ return range.first; });
-    coloring_->HandleColorRanges(std::move(ranges));
-}
+void FractalGenerator::PassRangesToColoringClass() { coloring_->HandleColorRanges(color_ranges_); }

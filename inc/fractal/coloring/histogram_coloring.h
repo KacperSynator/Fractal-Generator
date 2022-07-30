@@ -14,16 +14,17 @@ class HistogramColoring : public Coloring {
     virtual ~HistogramColoring() = default;
 
     void HandleIteration(const int& iteration, const int& x, const int& y) override;
-    void HandleColorRanges(std::vector<double> color_ranges) override;
-    std::vector<std::vector<double> > ResultArray() override;
+    void HandleColorRanges(const ColorRanges& color_ranges) override;
+    CalculatedColors ResultArray() override;
 
    private:
     int GetRange(const int& value);
+    ColorRange GetColorRange(const int& value);
 
     std::vector<std::vector<int> > iterations_;
     std::vector<int> histogram_;
     std::vector<int> range_histograms_;
-    std::vector<double> color_ranges_;
+    ColorRanges const* color_ranges_{nullptr};
 
     int data_range{0};
 };
