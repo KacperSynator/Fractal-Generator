@@ -128,7 +128,7 @@ void Gui::GenerateFractal() {
     }
     AddQColorRange(color_dialog_->selectedColor(), fg_);
     fg_->AddZoom(Zoom{kZoomStartX, kZoomStartY, kZoomStartSCale});
-    fg_->Generate("out");
-    LoadImage("out.bmp");
+    fg_->Generate(kDataDirPath / kOutputFileName);
+    LoadImage(kOutputFilePath.c_str());
     fg_->PopColorRange();
 }

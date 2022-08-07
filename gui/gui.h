@@ -19,6 +19,8 @@
 
 const std::filesystem::path kDataDirPath{DATA_DIR_PATH};
 const auto kTestFilePath{ kDataDirPath / "test.bmp" };
+const std::string kOutputFileName{ "out" };
+const auto kOutputFilePath{ kDataDirPath / (kOutputFileName + ".bmp") };
 
 const auto kMaxIterations{1000};
 const auto kImgWidth{800};
