@@ -28,6 +28,11 @@ bool FractalGenerator::AddColorRange(const double& range_end, const uint8_t& red
     return AddColorRange(range_end, RGBPixel<uint8_t>{red, green, blue});
 }
 
+
+void FractalGenerator::PopColorRange() {
+    color_ranges_.pop_back();
+}
+
 bool FractalGenerator::ValidateLastColorRange() {
     if (color_ranges_.back().first != 1.0) {
         std::cout << "Last color range is not equals to 1.0\n";

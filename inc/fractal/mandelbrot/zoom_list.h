@@ -9,6 +9,7 @@ class ZoomList {
   public:
     ZoomList(const int& width, const int& height) : width_(width), height_(height) {}
     void Add(const Zoom& zoom);
+    void Pop();
     std::pair<double, double> DoZoom(const int& x, const int& y);
 
   private:

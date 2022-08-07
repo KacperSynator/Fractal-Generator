@@ -2,17 +2,8 @@
 
 #include "bitmap/bitmap.h"
 #include "fractal_generator.h"
-// #include "gui/main_window.h"
 #include "gui/gui.h"
 
-
-const auto kMaxIterations{1000};
-const auto kImgWidth{800};
-const auto kImgHeight{600};
-
-constexpr auto kZoomStartX = kImgWidth / 2;
-constexpr auto kZoomStartY = kImgHeight / 2;
-constexpr auto kZoomStartSCale = 4.0 / kImgWidth;
 
 int main(int argc, char* argv[]) {
     QApplication a(argc, argv);

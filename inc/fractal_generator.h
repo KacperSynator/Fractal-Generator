@@ -31,8 +31,10 @@ class FractalGenerator {
     void Generate(const std::string& filename);
     void AddZoom(const Zoom& zoom) { zooms_.Add(zoom); }
     void AddZoom(const int& x, const int& y, const double& scale) { zooms_.Add(Zoom{x, y, scale}); }
+    void PopZoom() { zooms_.Pop(); }
     bool AddColorRange(const double& range_end, const RGBPixel<uint8_t>& color);
     bool AddColorRange(const double& range_end, const uint8_t& red, const uint8_t& green, const uint8_t& blue);
+    void PopColorRange();
 
     friend class FractalGeneratorBuilder;
 
