@@ -7,6 +7,7 @@
 #include <QFileDialog>
 #include <QMainWindow>
 #include <QDebug>
+#include <QColorDialog>
 
 #include <filesystem>
 #include <memory>
@@ -40,12 +41,18 @@ class Gui : public QMainWindow {
 
   private slots:
     void BrowseFile();
+    void ShowColorDialog();
+    void ChangeColorButton();
 
   private:
     void SetupCentralWidget();
+    void SetupSignals();
+    void LoadImage(const QString& file_path);
 
     QGridLayout *grid_{new QGridLayout()};
     QWidget *central_{new QWidget()};
     QLabel *image_{new QLabel()};
     QPushButton *browse_button_{new QPushButton("Browse", this)};
+    QPushButton *color_button_{new QPushButton("Color", this)};
+    QColorDialog *color_dialog_{new QColorDialog(this)};
 };
