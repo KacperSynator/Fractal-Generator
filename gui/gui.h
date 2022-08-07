@@ -8,6 +8,7 @@
 #include <QMainWindow>
 #include <QDebug>
 #include <QColorDialog>
+#include <QComboBox>
 
 #include <filesystem>
 #include <memory>
@@ -19,7 +20,13 @@
 const std::filesystem::path kDataDirPath{DATA_DIR_PATH};
 const auto kTestFilePath{ kDataDirPath / "test.bmp" };
 
+const auto kMaxIterations{1000};
+const auto kImgWidth{800};
+const auto kImgHeight{600};
 
+constexpr auto kZoomStartX = kImgWidth / 2;
+constexpr auto kZoomStartY = kImgHeight / 2;
+constexpr auto kZoomStartSCale = 4.0 / kImgWidth;
 
 class Gui : public QMainWindow {
     Q_OBJECT
@@ -43,16 +50,28 @@ class Gui : public QMainWindow {
     void BrowseFile();
     void ShowColorDialog();
     void ChangeColorButton();
+    void GenerateFractal();
 
   private:
     void SetupCentralWidget();
+    void FillComboBoxes();
     void SetupSignals();
     void LoadImage(const QString& file_path);
 
+    std::unique_ptr< FractalGenerator > fg_{nullptr};
+    FractalGeneratorBuilder fgb_{kImgWidth, kImgHeight, kMaxIterations};
+
     QGridLayout *grid_{new QGridLayout()};
     QWidget *central_{new QWidget()};
-    QLabel *image_{new QLabel()};
+    QLabel *image_{new QLabel(this)};
     QPushButton *browse_button_{new QPushButton("Browse", this)};
     QPushButton *color_button_{new QPushButton("Color", this)};
+    QPushButton *generate_button_{new QPushButton("Generate", this)};
     QColorDialog *color_dialog_{new QColorDialog(this)};
+    QLabel *fractal_text_{new QLabel("Fractal: ", this)};
+    QComboBox *fractal_box_{new QComboBox(this)};
+    QLabel *coloring_text_{new QLabel("Coloring: ", this)};
+    QComboBox *coloring_box_{new QComboBox(this)};
+    QLabel *image_text_{new QLabel("Image: ", this)};
+    QComboBox *image_box_{new QComboBox(this)};
 };
