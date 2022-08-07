@@ -14,8 +14,9 @@ file(GLOB_RECURSE HEADERS "*.h")
 
 find_package(Qt5 REQUIRED COMPONENTS Widgets)
 
-add_executable(${PROJECT_NAME} ${SOURCES} gui/main_window.ui gui/resources.qrc)
+add_executable(${PROJECT_NAME} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+target_compile_definitions(${PROJECT_NAME} PUBLIC DATA_DIR_PATH="${CMAKE_SOURCE_DIR}/data/")
 target_include_directories(${PROJECT_NAME} PUBLIC 
     "${PROJECT_SOURCE_DIR}"
     "${PROJECT_SOURCE_DIR}/inc"
