@@ -9,6 +9,7 @@
 #include <QDebug>
 #include <QColorDialog>
 #include <QComboBox>
+#include <QSlider>
 
 #include <filesystem>
 #include <memory>
@@ -29,6 +30,9 @@ const auto kImgHeight{600};
 constexpr auto kZoomStartX = kImgWidth / 2;
 constexpr auto kZoomStartY = kImgHeight / 2;
 constexpr auto kZoomStartSCale = 4.0 / kImgWidth;
+
+const auto kColorRangeSliderWidth{200};
+const auto kColorRangeSliderMaxVal{100};
 
 class Gui : public QMainWindow {
     Q_OBJECT
@@ -53,12 +57,18 @@ class Gui : public QMainWindow {
     void ShowColorDialog();
     void ChangeColorButton();
     void GenerateFractal();
+    void UpdateColorRangeValue();
+    void AddColorRange();
+    void PopColorRange();
 
   private:
     void SetupCentralWidget();
     void FillComboBoxes();
     void SetupSignals();
+    void CreateFractalGenerator();
     void LoadImage(const QString& file_path);
+    void SetupColorRangeSlider();
+    
 
     std::unique_ptr< FractalGenerator > fg_{nullptr};
     FractalGeneratorBuilder fgb_{kImgWidth, kImgHeight, kMaxIterations};
@@ -70,10 +80,15 @@ class Gui : public QMainWindow {
     QPushButton *color_button_{new QPushButton("Color", this)};
     QPushButton *generate_button_{new QPushButton("Generate", this)};
     QColorDialog *color_dialog_{new QColorDialog(this)};
+    QSlider *color_range_slider_{new QSlider{Qt::Orientation::Horizontal, this}};
+    QLabel *color_slider_value_{new QLabel(this)};
+    QPushButton * add_color_range_button_ {new QPushButton("Add color range", this)};
+    QPushButton * pop_color_range_button_ {new QPushButton("Pop color range", this)};
     QLabel *fractal_text_{new QLabel("Fractal: ", this)};
     QComboBox *fractal_box_{new QComboBox(this)};
     QLabel *coloring_text_{new QLabel("Coloring: ", this)};
     QComboBox *coloring_box_{new QComboBox(this)};
     QLabel *image_text_{new QLabel("Image: ", this)};
     QComboBox *image_box_{new QComboBox(this)};
+    
 };

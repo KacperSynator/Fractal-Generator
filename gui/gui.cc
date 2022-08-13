@@ -1,16 +1,21 @@
 #include "gui.h"
 
 void Gui::SetupCentralWidget() {
-    grid_->addWidget(image_, 3, 0, 1, 4);
+    grid_->addWidget(image_, 3, 0, 1, 5);
     grid_->addWidget(browse_button_, 0, 0, 1, 1);
-    grid_->addWidget(color_button_, 0, 1, 1, 1);
+    grid_->addWidget(color_button_, 0, 1, 1, 2);
+    grid_->addWidget(color_range_slider_, 1, 1, 1, 1);
+    grid_->addWidget(color_slider_value_, 1, 2, 1, 1);
+    grid_->addWidget(add_color_range_button_, 2, 1, 1, 1);
+    grid_->addWidget(pop_color_range_button_, 2, 2, 1, 1);
     grid_->addWidget(generate_button_, 1, 0, 1, 1);
-    grid_->addWidget(fractal_text_, 0, 2, 1, 1);
-    grid_->addWidget(fractal_box_, 0, 3, 1, 1);
-    grid_->addWidget(coloring_text_, 1, 2, 1, 1);
-    grid_->addWidget(coloring_box_, 1, 3, 1, 1);
-    grid_->addWidget(image_text_, 2, 2, 1, 1);
-    grid_->addWidget(image_box_, 2, 3, 1, 1);
+    grid_->addWidget(fractal_text_, 0, 3, 1, 1);
+    grid_->addWidget(fractal_box_, 0, 4, 1, 1);
+    grid_->addWidget(coloring_text_, 1, 3, 1, 1);
+    grid_->addWidget(coloring_box_, 1, 4, 1, 1);
+    grid_->addWidget(image_text_, 2, 3, 1, 1);
+    grid_->addWidget(image_box_, 2, 4, 1, 1);
+   
 
     central_->setLayout(grid_);
     
@@ -28,6 +33,8 @@ Gui::GuiPtr Gui::CreateGui(QWidget* parent) {
 }
 
 Gui::Gui(QWidget* parent) : QMainWindow(parent) {
+    CreateFractalGenerator();
+    SetupColorRangeSlider();
     SetupSignals();
     FillComboBoxes();
     LoadImage(kTestFilePath.c_str());
@@ -76,6 +83,9 @@ void Gui::SetupSignals() {
     QWidget::connect(browse_button_, &QPushButton::released, this, &Gui::BrowseFile);
     QWidget::connect(generate_button_, &QPushButton::released, this, &Gui::GenerateFractal);
     QWidget::connect(color_button_, &QPushButton::released, this, &Gui::ShowColorDialog);
+    QWidget::connect(add_color_range_button_, &QPushButton::released, this, &Gui::AddColorRange);
+    QWidget::connect(pop_color_range_button_, &QPushButton::released, this, &Gui::PopColorRange);
+    QWidget::connect(color_range_slider_, &QSlider::valueChanged, this, &Gui::UpdateColorRangeValue);
     QWidget::connect(color_dialog_, &QColorDialog::colorSelected, this, &Gui::ChangeColorButton);
 }
 
@@ -110,25 +120,45 @@ void Gui::ChangeColorButton() {
     // qDebug() << color_dialog_->selectedColor();
 }
 
-void AddQColorRange(const QColor& qcolor, std::unique_ptr< FractalGenerator >& fg) {
+void AddQColorRange(const float& range, const QColor& qcolor, std::unique_ptr< FractalGenerator >& fg) {
     int r, g, b;
     qcolor.getRgb(&r, &g, &b);
     std:: cout << r << " " << g << " " << b << std::endl;
-    fg->AddColorRange(1.0, r, g, b);
+    fg->AddColorRange(range, r, g, b);
 }
 
+void Gui::AddColorRange() {
+    auto range = color_slider_value_->text().toFloat();
+    AddQColorRange(range, color_dialog_->selectedColor(), fg_);
+}
+
+void Gui::PopColorRange() {
+    fg_->PopColorRange();
+}
+void Gui::CreateFractalGenerator() {
+   fg_.reset();
+   fg_ = std::make_unique<FractalGenerator>(fgb_
+                                                .BitmapImage()
+                                                .HistColoring()
+                                                .MandelbrotFractal());
+}
+
+
 void Gui::GenerateFractal() {
-    if (!fg_) {
-        fg_ = std::make_unique<FractalGenerator>(
-            fgb_.BitmapImage()
-                .HistColoring()
-                .MandelbrotFractal()
-        );
-        fg_->AddColorRange(0.0, 0, 0, 0);
-    }
-    AddQColorRange(color_dialog_->selectedColor(), fg_);
     fg_->AddZoom(Zoom{kZoomStartX, kZoomStartY, kZoomStartSCale});
     fg_->Generate(kDataDirPath / kOutputFileName);
     LoadImage(kOutputFilePath.c_str());
-    fg_->PopColorRange();
+}
+
+void Gui::SetupColorRangeSlider() {
+    color_range_slider_->setMaximumWidth(kColorRangeSliderWidth);
+    color_range_slider_->setMaximum(kColorRangeSliderMaxVal);
+    color_range_slider_->setTickPosition(QSlider::TicksBothSides);
+}
+
+void Gui::UpdateColorRangeValue() {
+    float value = color_range_slider_->value();
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(2) << value / kColorRangeSliderMaxVal;
+    color_slider_value_->setText(oss.str().c_str());
 }
