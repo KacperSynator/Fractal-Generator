@@ -3,6 +3,14 @@ Window app for creating fractal images, with customizable color ranges and zooms
 
 ![image](https://user-images.githubusercontent.com/62207289/184549195-ff583df4-47ed-4c44-af8f-25716ed86111.png)
 
+**Above image generation values:**
+|Color range|  RGB  | Zoom coords | Zoom scale |
+|:---------:|:-----:|:-----------:|:----------:|
+|    0.00   |#0000ff|x: 292 y: 196|   0.1      |
+|    0.05   |#ff6347|x: 365 y: 228|   0.1      |
+|    0.08   |#ffd700|             |            |
+|    1.00   |#ffffff|             |            |
+
 ## Getting Started
 
 #### 0. Install qt5
