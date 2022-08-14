@@ -247,6 +247,7 @@ void Gui::mouseReleaseEvent(QMouseEvent *event) {
 
 void Gui::AddZoom() {
     if (current_zoom_.x > 0) {
+        qDebug() << current_zoom_.x << " " << current_zoom_.y << " " << current_zoom_.scale;
         zooms_.Add(current_zoom_);
     }
 }
