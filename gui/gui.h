@@ -55,6 +55,7 @@ class Gui : public QMainWindow {
 
   private slots:
     void BrowseFile();
+    void SaveAs();
     void ShowColorDialog();
     void ChangeColorButton();
     void GenerateFractal();
@@ -80,6 +81,7 @@ class Gui : public QMainWindow {
     QWidget *central_{new QWidget()};
     QLabel *image_{new QLabel(this)};
     QPushButton *browse_button_{new QPushButton("Browse", this)};
+    QPushButton *save_as_button_{new QPushButton("Save As", this)};
     QPushButton *color_button_{new QPushButton("Color", this)};
     QPushButton *generate_button_{new QPushButton("Generate", this)};
     QColorDialog *color_dialog_{new QColorDialog(this)};
