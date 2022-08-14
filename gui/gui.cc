@@ -25,6 +25,11 @@ void Gui::SetupCentralWidget() {
 Gui::GuiPtr Gui::CreateGui(QWidget* parent) {
     auto gui = std::make_unique<Gui>(parent);
     
+    gui->CreateFractalGenerator();
+    gui->SetupColorRangeSlider();
+    gui->SetupSignals();
+    gui->FillComboBoxes();
+    gui->LoadImage(kTestFilePath.c_str());
     gui->SetupCentralWidget();
     gui->setWindowTitle("Fractal Generator");
 
@@ -33,11 +38,7 @@ Gui::GuiPtr Gui::CreateGui(QWidget* parent) {
 }
 
 Gui::Gui(QWidget* parent) : QMainWindow(parent) {
-    CreateFractalGenerator();
-    SetupColorRangeSlider();
-    SetupSignals();
-    FillComboBoxes();
-    LoadImage(kTestFilePath.c_str());
+    color_dialog_->setOption(QColorDialog::DontUseNativeDialog);
 }
 
 Gui::Gui(Gui&& other) noexcept {
@@ -71,12 +72,7 @@ void swap(Gui& lhs, Gui& rhs) noexcept {
 }
 
 Gui::~Gui() {
-    delete image_;
-    delete browse_button_;
-    delete color_button_;
-    delete color_dialog_;
-    delete grid_;
-    delete central_;
+    qDeleteAll(this->findChildren<QWidget*>("", Qt::FindDirectChildrenOnly));
 }
 
 void Gui::SetupSignals() {
@@ -149,6 +145,18 @@ void Gui::CreateFractalGenerator() {
 
 
 void Gui::GenerateFractal() {
+    if (color_ranges_.empty()) {
+         error_box_->setText("Error: color ranges are not specified!");
+        error_box_->exec();
+        return;
+    }
+
+    if (color_ranges_.back() != 1.0) {
+        error_box_->setText("Error: last color range is not equal to 1.0!");
+        error_box_->exec();
+        return;
+    }
+
     fg_->AddZoom(Zoom{kZoomStartX, kZoomStartY, kZoomStartSCale});
     fg_->Generate(kDataDirPath / kOutputFileName);
     LoadImage(kOutputFilePath.c_str());

@@ -10,6 +10,7 @@
 #include <QColorDialog>
 #include <QComboBox>
 #include <QSlider>
+#include <QMessageBox>
 
 #include <filesystem>
 #include <memory>
@@ -92,5 +93,7 @@ class Gui : public QMainWindow {
     QComboBox *coloring_box_{new QComboBox(this)};
     QLabel *image_text_{new QLabel("Image: ", this)};
     QComboBox *image_box_{new QComboBox(this)};
+
+    QMessageBox *error_box_{new QMessageBox(this)};
     
 };
