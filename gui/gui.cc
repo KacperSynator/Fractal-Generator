@@ -1,22 +1,27 @@
 #include "gui.h"
 
 void Gui::SetupCentralWidget() {
-    grid_->addWidget(image_, 3, 0, 1, 5);
+    grid_->addWidget(image_, 3, 0, 1, 7);
     grid_->addWidget(browse_button_, 0, 0, 1, 1);
     grid_->addWidget(save_as_button_, 1, 0, 1, 1);
     grid_->addWidget(generate_button_, 2, 0, 1, 1);
     grid_->addWidget(color_button_, 0, 1, 1, 2);
-    grid_->addWidget(color_range_slider_, 1, 1, 1, 1);
-    grid_->addWidget(color_slider_value_, 1, 2, 1, 1);
+    grid_->addWidget(color_range_slider_, 1, 1, 1, 2);
+    grid_->addWidget(color_slider_value_, 1, 2, 1, 1, Qt::AlignRight);
     grid_->addWidget(add_color_range_button_, 2, 1, 1, 1);
     grid_->addWidget(pop_color_range_button_, 2, 2, 1, 1);
-    grid_->addWidget(fractal_text_, 0, 3, 1, 1);
-    grid_->addWidget(fractal_box_, 0, 4, 1, 1);
-    grid_->addWidget(coloring_text_, 1, 3, 1, 1);
-    grid_->addWidget(coloring_box_, 1, 4, 1, 1);
-    grid_->addWidget(image_text_, 2, 3, 1, 1);
-    grid_->addWidget(image_box_, 2, 4, 1, 1);
+    grid_->addWidget(zoom_offset_, 0, 3, 1, 2, Qt::AlignCenter);
+    grid_->addWidget(add_zoom_button_, 2, 3, 1, 1);
+    grid_->addWidget(pop_zoom_button_, 2, 4, 1, 1);
+    grid_->addWidget(fractal_text_, 0, 5, 1, 1, Qt::AlignRight);
+    grid_->addWidget(fractal_box_, 0, 6, 1, 1);
+    grid_->addWidget(coloring_text_, 1, 5, 1, 1, Qt::AlignRight);
+    grid_->addWidget(coloring_box_, 1, 6, 1, 1);
+    grid_->addWidget(image_text_, 2, 5, 1, 1, Qt::AlignRight);
+    grid_->addWidget(image_box_, 2, 6, 1, 1);
 
+    // grid_->setColumnMinimumWidth(3, 200);
+    grid_->setColumnMinimumWidth(5, 50);
     central_->setLayout(grid_);
 
     setCentralWidget(central_);
@@ -37,7 +42,10 @@ Gui::GuiPtr Gui::CreateGui(QWidget* parent) {
     return gui;
 }
 
-Gui::Gui(QWidget* parent) : QMainWindow(parent) { color_dialog_->setOption(QColorDialog::DontUseNativeDialog); }
+Gui::Gui(QWidget* parent) : QMainWindow(parent) { 
+    color_dialog_->setOption(QColorDialog::DontUseNativeDialog);
+    zooms_.Add(Zoom{kZoomStartX, kZoomStartY, kZoomStartSCale});
+}
 
 Gui::Gui(Gui&& other) noexcept {
     using std::exchange;
@@ -79,6 +87,8 @@ void Gui::SetupSignals() {
     QWidget::connect(color_range_slider_, &QSlider::valueChanged, this, &Gui::UpdateColorRangeValue);
     QWidget::connect(color_range_slider_, &QSlider::sliderReleased, this, &Gui::ValidateColorRangeSlider);
     QWidget::connect(color_dialog_, &QColorDialog::colorSelected, this, &Gui::ChangeColorButton);
+    QWidget::connect(add_zoom_button_, &QPushButton::released, this, &Gui::AddZoom);
+    QWidget::connect(pop_zoom_button_, &QPushButton::released, this, &Gui::PopZoom);
 }
 
 void Gui::FillComboBoxes() {
@@ -101,9 +111,6 @@ void Gui::BrowseFile() {
 }
 
 void WriteLabelImageToFile(QLabel* image, QString file, std::string image_type) {
-    QByteArray bArray;
-    QBuffer buffer(&bArray);
-    buffer.open(QIODevice::WriteOnly);
     image->pixmap()->save(file, image_type.c_str());
 }
 
@@ -165,8 +172,7 @@ void Gui::GenerateFractal() {
         error_box_->exec();
         return;
     }
-
-    fg_->AddZoom(Zoom{kZoomStartX, kZoomStartY, kZoomStartSCale});
+    fg_->SetZooms(zooms_);
     fg_->Generate(kDataDirPath / kOutputFileName);
     LoadImage(kOutputFilePath.c_str());
 }
@@ -199,4 +205,31 @@ void Gui::ValidateColorRangeSlider() {
         color_range_slider_->setValue(color_ranges_.back() * kColorRangeSliderMaxVal);
         return;
     }
+}
+
+void Gui::mouseReleaseEvent(QMouseEvent *event) {
+    if (event->button() == Qt::LeftButton) {
+        auto img_pixel = (event->localPos() - image_->pos()).toPoint();
+        qDebug() << img_pixel;
+        if (img_pixel.x() >= 0 && img_pixel.x() <= kImgWidth &&
+            img_pixel.y() >= 0 && img_pixel.y() <= kImgHeight) {
+            
+            current_zoom_ = Zoom{img_pixel.x(), img_pixel.y(), 0.1};
+            std::ostringstream oss;
+            oss << "Zoom: x: " << img_pixel.x() << " y: " << img_pixel.y();
+            zoom_offset_->setText(oss.str().c_str());
+        }
+    }
+}
+
+void Gui::AddZoom() {
+    if (current_zoom_.x > 0) {
+        zooms_.Add(current_zoom_);
+    }
+}
+
+void Gui::PopZoom() {
+    if (zooms_.Size() <= 1) return;
+
+    zooms_.Pop();
 }

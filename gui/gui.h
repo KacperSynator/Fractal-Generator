@@ -63,6 +63,11 @@ class Gui : public QMainWindow {
     void ValidateColorRangeSlider();
     void AddColorRange();
     void PopColorRange();
+    void AddZoom();
+    void PopZoom();
+  
+  protected:
+    void mouseReleaseEvent(QMouseEvent *event) override;
 
   private:
     void SetupCentralWidget();
@@ -76,6 +81,8 @@ class Gui : public QMainWindow {
     std::unique_ptr< FractalGenerator > fg_{nullptr};
     FractalGeneratorBuilder fgb_{kImgWidth, kImgHeight, kMaxIterations};
     std::vector<float> color_ranges_;
+    ZoomList zooms_{kImgWidth, kImgHeight};
+    Zoom current_zoom_;
 
     QGridLayout *grid_{new QGridLayout()};
     QWidget *central_{new QWidget()};
@@ -95,7 +102,9 @@ class Gui : public QMainWindow {
     QComboBox *coloring_box_{new QComboBox(this)};
     QLabel *image_text_{new QLabel("Image: ", this)};
     QComboBox *image_box_{new QComboBox(this)};
+    QLabel *zoom_offset_{new QLabel{"Zoom: x: 0  y: 0", this}};
+    QPushButton * add_zoom_button_ {new QPushButton("Add zoom", this)};
+    QPushButton * pop_zoom_button_ {new QPushButton("Pop zoom", this)};
 
     QMessageBox *error_box_{new QMessageBox(this)};
-    
 };
