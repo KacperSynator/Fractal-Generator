@@ -11,6 +11,7 @@ void Gui::SetupCentralWidget() {
     grid_->addWidget(add_color_range_button_, 2, 1, 1, 1);
     grid_->addWidget(pop_color_range_button_, 2, 2, 1, 1);
     grid_->addWidget(zoom_offset_, 0, 3, 1, 2, Qt::AlignCenter);
+    grid_->addWidget(zoom_scale_slider_, 1, 3, 1, 2);
     grid_->addWidget(add_zoom_button_, 2, 3, 1, 1);
     grid_->addWidget(pop_zoom_button_, 2, 4, 1, 1);
     grid_->addWidget(fractal_text_, 0, 5, 1, 1, Qt::AlignRight);
@@ -20,7 +21,6 @@ void Gui::SetupCentralWidget() {
     grid_->addWidget(image_text_, 2, 5, 1, 1, Qt::AlignRight);
     grid_->addWidget(image_box_, 2, 6, 1, 1);
 
-    // grid_->setColumnMinimumWidth(3, 200);
     grid_->setColumnMinimumWidth(5, 50);
     central_->setLayout(grid_);
 
@@ -32,6 +32,7 @@ Gui::GuiPtr Gui::CreateGui(QWidget* parent) {
 
     gui->CreateFractalGenerator();
     gui->SetupColorRangeSlider();
+    gui->SetupZoomScaleSlider();
     gui->SetupSignals();
     gui->FillComboBoxes();
     gui->LoadImage(kTestFilePath.c_str());
@@ -86,6 +87,7 @@ void Gui::SetupSignals() {
     QWidget::connect(pop_color_range_button_, &QPushButton::released, this, &Gui::PopColorRange);
     QWidget::connect(color_range_slider_, &QSlider::valueChanged, this, &Gui::UpdateColorRangeValue);
     QWidget::connect(color_range_slider_, &QSlider::sliderReleased, this, &Gui::ValidateColorRangeSlider);
+    QWidget::connect(zoom_scale_slider_, &QSlider::valueChanged, this, &Gui::UpdateZoomScaleValue);
     QWidget::connect(color_dialog_, &QColorDialog::colorSelected, this, &Gui::ChangeColorButton);
     QWidget::connect(add_zoom_button_, &QPushButton::released, this, &Gui::AddZoom);
     QWidget::connect(pop_zoom_button_, &QPushButton::released, this, &Gui::PopZoom);
@@ -172,15 +174,24 @@ void Gui::GenerateFractal() {
         error_box_->exec();
         return;
     }
+
     fg_->SetZooms(zooms_);
     fg_->Generate(kDataDirPath / kOutputFileName);
     LoadImage(kOutputFilePath.c_str());
 }
 
+void SetupSlider(QSlider* slider, int width, int max_val, QSlider::TickPosition tick_pos) {
+    slider->setMaximumWidth(width);
+    slider->setMaximum(max_val);
+    slider->setTickPosition(tick_pos);
+}
+
 void Gui::SetupColorRangeSlider() {
-    color_range_slider_->setMaximumWidth(kColorRangeSliderWidth);
-    color_range_slider_->setMaximum(kColorRangeSliderMaxVal);
-    color_range_slider_->setTickPosition(QSlider::TicksBothSides);
+    SetupSlider(color_range_slider_, kColorRangeSliderWidth, kColorRangeSliderMaxVal, QSlider::TicksBothSides);
+}
+
+void Gui::SetupZoomScaleSlider() {
+    SetupSlider(zoom_scale_slider_, kZoomScaleSliderWidth, kZoomScaleSliderMaxVal, QSlider::TicksBothSides);
 }
 
 void Gui::UpdateColorRangeValue() {
@@ -207,17 +218,29 @@ void Gui::ValidateColorRangeSlider() {
     }
 }
 
+void SetZoomOffsetText(QLabel* text_label, const Zoom& zoom) {
+    std::ostringstream oss;
+    oss << "Zoom: x: " << zoom.x << " y: " << zoom.y << " scale: " << zoom.scale;
+    text_label->setText(oss.str().c_str());
+}
+
+void Gui::UpdateZoomScaleValue() {
+    float value = zoom_scale_slider_->value();
+
+    current_zoom_.scale = value / kZoomScaleSliderMaxVal;
+    SetZoomOffsetText(zoom_offset_, current_zoom_);
+}
+
 void Gui::mouseReleaseEvent(QMouseEvent *event) {
     if (event->button() == Qt::LeftButton) {
         auto img_pixel = (event->localPos() - image_->pos()).toPoint();
-        qDebug() << img_pixel;
+        // qDebug() << img_pixel;
         if (img_pixel.x() >= 0 && img_pixel.x() <= kImgWidth &&
             img_pixel.y() >= 0 && img_pixel.y() <= kImgHeight) {
             
-            current_zoom_ = Zoom{img_pixel.x(), img_pixel.y(), 0.1};
-            std::ostringstream oss;
-            oss << "Zoom: x: " << img_pixel.x() << " y: " << img_pixel.y();
-            zoom_offset_->setText(oss.str().c_str());
+            current_zoom_.x = img_pixel.x();
+            current_zoom_.y = img_pixel.y();
+            SetZoomOffsetText(zoom_offset_, current_zoom_);
         }
     }
 }
@@ -233,3 +256,4 @@ void Gui::PopZoom() {
 
     zooms_.Pop();
 }
+

@@ -34,6 +34,8 @@ constexpr auto kZoomStartSCale = 4.0 / kImgWidth;
 
 const auto kColorRangeSliderWidth{200};
 const auto kColorRangeSliderMaxVal{100};
+const auto kZoomScaleSliderWidth{200};
+const auto kZoomScaleSliderMaxVal{100};
 
 class Gui : public QMainWindow {
     Q_OBJECT
@@ -60,6 +62,7 @@ class Gui : public QMainWindow {
     void ChangeColorButton();
     void GenerateFractal();
     void UpdateColorRangeValue();
+    void UpdateZoomScaleValue();
     void ValidateColorRangeSlider();
     void AddColorRange();
     void PopColorRange();
@@ -76,6 +79,7 @@ class Gui : public QMainWindow {
     void CreateFractalGenerator();
     void LoadImage(const QString& file_path);
     void SetupColorRangeSlider();
+    void SetupZoomScaleSlider();
     
 
     std::unique_ptr< FractalGenerator > fg_{nullptr};
@@ -102,7 +106,8 @@ class Gui : public QMainWindow {
     QComboBox *coloring_box_{new QComboBox(this)};
     QLabel *image_text_{new QLabel("Image: ", this)};
     QComboBox *image_box_{new QComboBox(this)};
-    QLabel *zoom_offset_{new QLabel{"Zoom: x: 0  y: 0", this}};
+    QLabel *zoom_offset_{new QLabel{"Zoom: x:  y:  scale: ", this}};
+    QSlider *zoom_scale_slider_{new QSlider{Qt::Orientation::Horizontal, this}};
     QPushButton * add_zoom_button_ {new QPushButton("Add zoom", this)};
     QPushButton * pop_zoom_button_ {new QPushButton("Pop zoom", this)};
 
