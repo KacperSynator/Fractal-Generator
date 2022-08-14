@@ -140,6 +140,7 @@ void Gui::AddColorRange() {
 }
 
 void Gui::PopColorRange() {
+    if (color_ranges_.empty()) return;
     fg_->PopColorRange();
     color_ranges_.pop_back();
     color_range_slider_->setValue(color_ranges_.back() * kColorRangeSliderMaxVal);

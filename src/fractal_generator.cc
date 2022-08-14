@@ -30,7 +30,9 @@ bool FractalGenerator::AddColorRange(const double& range_end, const uint8_t& red
 
 
 void FractalGenerator::PopColorRange() {
-    color_ranges_.pop_back();
+    if (!color_ranges_.empty()) {
+        color_ranges_.pop_back();
+    }
 }
 
 bool FractalGenerator::ValidateLastColorRange() {
