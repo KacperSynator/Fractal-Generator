@@ -58,6 +58,7 @@ class Gui : public QMainWindow {
     void ChangeColorButton();
     void GenerateFractal();
     void UpdateColorRangeValue();
+    void ValidateColorRangeSlider();
     void AddColorRange();
     void PopColorRange();
 
@@ -72,6 +73,7 @@ class Gui : public QMainWindow {
 
     std::unique_ptr< FractalGenerator > fg_{nullptr};
     FractalGeneratorBuilder fgb_{kImgWidth, kImgHeight, kMaxIterations};
+    std::vector<float> color_ranges_;
 
     QGridLayout *grid_{new QGridLayout()};
     QWidget *central_{new QWidget()};
@@ -81,7 +83,7 @@ class Gui : public QMainWindow {
     QPushButton *generate_button_{new QPushButton("Generate", this)};
     QColorDialog *color_dialog_{new QColorDialog(this)};
     QSlider *color_range_slider_{new QSlider{Qt::Orientation::Horizontal, this}};
-    QLabel *color_slider_value_{new QLabel(this)};
+    QLabel *color_slider_value_{new QLabel("0.00", this)};
     QPushButton * add_color_range_button_ {new QPushButton("Add color range", this)};
     QPushButton * pop_color_range_button_ {new QPushButton("Pop color range", this)};
     QLabel *fractal_text_{new QLabel("Fractal: ", this)};

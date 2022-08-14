@@ -86,6 +86,7 @@ void Gui::SetupSignals() {
     QWidget::connect(add_color_range_button_, &QPushButton::released, this, &Gui::AddColorRange);
     QWidget::connect(pop_color_range_button_, &QPushButton::released, this, &Gui::PopColorRange);
     QWidget::connect(color_range_slider_, &QSlider::valueChanged, this, &Gui::UpdateColorRangeValue);
+    QWidget::connect(color_range_slider_, &QSlider::sliderReleased, this, &Gui::ValidateColorRangeSlider);
     QWidget::connect(color_dialog_, &QColorDialog::colorSelected, this, &Gui::ChangeColorButton);
 }
 
@@ -129,11 +130,14 @@ void AddQColorRange(const float& range, const QColor& qcolor, std::unique_ptr< F
 
 void Gui::AddColorRange() {
     auto range = color_slider_value_->text().toFloat();
+    color_ranges_.emplace_back(range);
     AddQColorRange(range, color_dialog_->selectedColor(), fg_);
 }
 
 void Gui::PopColorRange() {
     fg_->PopColorRange();
+    color_ranges_.pop_back();
+    color_range_slider_->setValue(color_ranges_.back() * kColorRangeSliderMaxVal);
 }
 void Gui::CreateFractalGenerator() {
    fg_.reset();
@@ -158,7 +162,24 @@ void Gui::SetupColorRangeSlider() {
 
 void Gui::UpdateColorRangeValue() {
     float value = color_range_slider_->value();
+    
     std::ostringstream oss;
     oss << std::fixed << std::setprecision(2) << value / kColorRangeSliderMaxVal;
     color_slider_value_->setText(oss.str().c_str());
+}
+
+void Gui::ValidateColorRangeSlider() {
+    float value = color_range_slider_->value();
+
+    if (color_ranges_.empty() && value != 0) {
+        color_range_slider_->setValue(0);
+        return;
+    }
+
+    float normalized_value = value / kColorRangeSliderMaxVal;
+
+    if (!color_ranges_.empty() && normalized_value <= color_ranges_.back()) {
+        color_range_slider_->setValue(color_ranges_.back() * kColorRangeSliderMaxVal);
+        return;
+    }
 }
