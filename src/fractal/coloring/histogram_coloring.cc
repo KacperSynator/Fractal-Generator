@@ -72,3 +72,9 @@ Coloring::ColorRange HistogramColoring::GetColorRange(const int& value) {
 
     return std::make_pair((*color_ranges_)[idx].second, (*color_ranges_)[idx + 1].second);
 }
+
+void HistogramColoring::Reset() {
+    std::fill(histogram_.begin(), histogram_.end(), 0);
+    std::fill(range_histograms_.begin(), range_histograms_.end(), 0);
+    for (auto& row : iterations_) std::fill(row.begin(), row.end(), 0);
+}

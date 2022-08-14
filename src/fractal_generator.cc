@@ -9,6 +9,7 @@ FractalGenerator::FractalGenerator(std::unique_ptr<Fractal> fractal, std::unique
 
 void FractalGenerator::Generate(const std::string& filename) {
     if (!ValidateLastColorRange()) return;
+    coloring_->Reset();
     PassRangesToColoringClass();
     CalculateFractal();
     DrawFractal();

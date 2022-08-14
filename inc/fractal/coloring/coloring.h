@@ -13,4 +13,5 @@ class Coloring {
     virtual void HandleIteration(const int& value, const int& x, const int& y) = 0;
     virtual void HandleColorRanges(const ColorRanges& color_ranges) = 0;
     virtual CalculatedColors ResultArray() = 0;
+    virtual void Reset() = 0;
 };

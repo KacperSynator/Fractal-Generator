@@ -16,6 +16,7 @@ class HistogramColoring : public Coloring {
     void HandleIteration(const int& iteration, const int& x, const int& y) override;
     void HandleColorRanges(const ColorRanges& color_ranges) override;
     CalculatedColors ResultArray() override;
+    void Reset() override;
 
    private:
     int GetRange(const int& value);
